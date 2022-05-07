@@ -1,5 +1,5 @@
-# April
-Art'Portal (discord partner server)'s bot.
+# Aprıl
+Art'Portal (discord partner server)'s bot and mascot.
 
 Proudly developped by @CoolMan#4094
 
