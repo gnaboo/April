@@ -1,5 +1,7 @@
 # April
-Art'Portal (discord partner server)'s bot
+Art'Portal (discord partner server)'s bot.
+
+Proudly developped by @CoolMan#4094
 
 In order to use the bot, you will **need** the following npm modules:
   - discord.js
