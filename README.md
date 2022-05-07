@@ -1,7 +1,7 @@
 # Aprıl - Please update this branch and leave main for releases
 [Art'Portal](https://discord.gg/graphisme) (discord partner server)'s bot and mascot.
 
-Proudly developed by @CoolMan#4094
+Proudly developed by @CoolMan#4094 - Artwork by @Frisk#7515
 
 In order to use the bot, you will **need** the following npm modules:
   - discord.js
