@@ -1,4 +1,4 @@
-const { Discord, MessageEmbed, MessageActionRow, MessageSelectMenu, MessageButton, isContextMenu } = require('discord.js');
+const { Discord, MessageEmbed, MessageActionRow, MessageSelectMenu, MessageButton, isContextMenu, Permissions } = require('discord.js');
 const { Modal, TextInputComponent, showModal } = require('discord-modals');
 var fs = require("fs");
 
@@ -22,8 +22,8 @@ module.exports = {
                     try {
                         await interaction.editReply({ contnent: 'There was an error while executing this command!', ephemeral: true });
                     } catch { }
-                };
-            };
+                }
+            }
         }
 
         else if (interaction.isSelectMenu()) {
@@ -310,6 +310,21 @@ module.exports = {
                         }
                         break;
 
+                    case 'role_hobbies_cooking':
+                        await interaction.guild.roles.fetch();
+                        const cookingmember = interaction.member;
+                        let cookingrole = interaction.guild.roles.cache.find(role => role.id == '949746678519439370');
+                        if (cookingmember.roles.cache.some(role => role.id == '949746678519439370')) {
+                            cookingmember.roles.remove(cookingrole);
+                            hobbiesmessage=hobbiesmessage+"\nVous avez bien été retiré.e du rôle <@&949746678519439370>";
+                            await interaction.editReply({ content: hobbiesmessage, embeds: [], components: [] });
+                        } else {
+                            cookingmember.roles.add(cookingrole);
+                            hobbiesmessage=hobbiesmessage+"\nVous avez bien reçu le rôle <@&949746678519439370>";
+                            await interaction.editReply({ content: hobbiesmessage, embeds: [], components: [], ephemeral: true });
+                        }
+                        break;
+
 
                     case 'role_ping_announcements':
                         await interaction.guild.roles.fetch();
@@ -416,6 +431,21 @@ module.exports = {
                         }
                         break;
 
+                    case 'role_ping_insta':
+                        await interaction.guild.roles.fetch();
+                        const instamember = interaction.member;
+                        let instasrole = interaction.guild.roles.cache.find(role => role.id == '955143137226010704');
+                        if (instamember.roles.cache.some(role => role.id == '955143137226010704')) {
+                            instamember.roles.remove(instasrole);
+                            pingmessage=pingmessage+"\nVous avez bien été retiré.e du rôle <@&955143137226010704>";
+                            await interaction.editReply({ content: pingmessage, embeds: [], components: [] });
+                        } else {
+                            instamember.roles.add(instasrole);
+                            pingmessage=pingmessage+"\nVous avez bien reçu le rôle <@&955143137226010704>";
+                            await interaction.editReply({ content: pingmessage, embeds: [], components: [], ephemeral: true });
+                        }
+                        break;
+
 
                     //ticket
                     case 'command_option':
@@ -430,11 +460,18 @@ module.exports = {
                         break;
                     case 'contact_option':
                         await interaction.guild.channels.create("ticket-" + interaction.user.username, {
-                            type: 'GUILD_TEXT'
+                            type: 'GUILD_TEXT',
+                        	permissionOverwrites: [
+                        		{
+                        			id: interaction.user.id,
+                        			allow: [Permissions.FLAGS.VIEW_CHANNEL],
+                        		},
+                        	],
                         }).then(async channel => {
                             let category = interaction.guild.channels.cache.find(cat => cat.id === "916721453121040424")
 
                             await channel.setParent(category.id);
+			                await channel.permissionOverwrites.create(interaction.user.id, { VIEW_CHANNEL: true });
 
                             var btnrowTicket = new MessageActionRow()
                                 .addComponents([
@@ -497,9 +534,10 @@ module.exports = {
                     .setCustomId('command_description')
                     .setLabel('Description')
                     .setStyle('LONG')
+                    .setMinLength(150)
                     .setMaxLength(1000)
-                    .setPlaceholder('(Décrivez votre demande afin de faciliter le travail du graphiste.)')
-                    .setRequired(false),
+                    .setPlaceholder('(Décrivez votre demande afin de faciliter le travail du graphiste. Soyez le plus précis possible!)')
+                    .setRequired(true),
                     new TextInputComponent()
                     .setCustomId('command_toppings')
                     .setLabel('Effets/Détails/Texte à ajouter')
@@ -554,6 +592,20 @@ module.exports = {
 
         else if (interaction.isButton()) {
             switch (interaction.customId) {
+                case 'suggestion':
+                    //interaction.message.edit({ embeds: interaction.message.embeds, components: interaction.message.components})
+                    showModal(suggestionmodal, {
+                        client: client, // This method needs the Client to show the Modal through the Discord API.
+                        interaction: interaction // This method needs the Interaction to show the Modal with the Interaction ID & Token.
+                    })
+                    break;
+                case 'question':
+                    //interaction.message.edit({ embeds: interaction.message.embeds, components: interaction.message.components})
+                    showModal(questionmodal, {
+                        client: client, // This method needs the Client to show the Modal through the Discord API.
+                        interaction: interaction // This method needs the Interaction to show the Modal with the Interaction ID & Token.
+                    })
+                    break;
                 case 'ping_refresh_btn':
                     try {
                         const sent = await interaction.channel.send({ content: 'Pinging...' });
@@ -584,7 +636,7 @@ module.exports = {
                     break;
 
                 case 'modpanel_mute':
-                    if(!interaction.member.permissions.has("BAN_MEMBERS")) return interaction.reply({content: `Vous n'avez pas la permisssion \`BAN_MEMBERS\` pour effectuer cette commande.`, ephemeral: true});
+                    if(!interaction.member.permissions.has("MODERATE_MEMBERS")) return interaction.reply({content: `Vous n'avez pas la permisssion \`MODERATE_MEMBERS\` pour effectuer cette commande.`, ephemeral: true});
                     showModal(modpanel_mutemodal, {
                         client: client, // This method needs the Client to show the Modal through the Discord API.
                         interaction: interaction // This method needs the Interaction to show the Modal with the Interaction ID & Token.
@@ -594,72 +646,9 @@ module.exports = {
                 case 'modpanel_ban':
                     if(!interaction.member.permissions.has("BAN_MEMBERS")) return interaction.reply({content: `Vous n'avez pas la permisssion \`BAN_MEMBERS\` pour effectuer cette commande.`, ephemeral: true});
                     showModal(modpanel_banmodal, {
-                        client: client, // This method needs the Client to show the Modal through the Discord API.
-                        interaction: interaction // This method needs the Interaction to show the Modal with the Interaction ID & Token.
+                        client: client,
+                        interaction: interaction
                     })
-                    /*await interaction.reply({ content:"Veuillez mentionner l'utilisateur à bannir", ephemeral: true })
-                    const modpanelbancollector = interaction.channel.createMessageCollector({ time: 60000, max: 1 });
-                    modpanelbancollector.on('collect', async m => {
-                        try{
-                            let user = await m.mentions.users.first();
-                            const modpanelbanmember = await interaction.guild.members.fetch(user.id);
-                            if (!modpanelbanmember) return interaction.followUp({content: "Je n'ai pas trouvé le membre indiqué, merci de réessayer"})
-                            const userRoleRawPos = modpanelbanmember.roles.highest.rawPosition;
-                            const memberRoleRawPos = interaction.member.roles.highest.rawPosition;
-                            if(modpanelbanmember.user.id === interaction.user.id) return interaction.followUp({content: `Vous ne pouvez pas vous bannir vous-même! !`, ephemeral: true});
-                            if(userRoleRawPos >= memberRoleRawPos) return interaction.followUp({content: `Vous ne pouvez pas bannir cet utilisateur.`, ephemeral: true});
-                            if(!modpanelbanmember.bannable) return interaction.followUp({content: `Je ne peux pas bannir cet utilisateur. Cela est dû au fait que l'utilisateur est modérateur/administrateur ou que son rôle est au dessus du rôle du bot...`, ephemeral: true});
-                            m.delete()
-
-                            await interaction.followUp({content: "Veuillez indiquer la raison du ban", components:[sanctionreason], ephemeral: true})
-                            //const modpanelbancollector2 = interaction.channel.createMessageCollector({ time: 60000, max: 1 });
-                            const modpanelbancollector2 = message.createMessageComponentCollector({ componentType: 'SELECT_MENU', time: 60000 });
-                            modpanelbancollector2.on('collect',async i => {
-                                let reason=""
-                                i.values.forEach(async (value, index) => {
-                                    reason=reason+`${value}\n`
-                                })
-                                await modpanelbanmember.ban({reason: reason !== null ? `${reason}` : 'No reason specified'});
-                                await i.update({content:"Le membre a bien été banni !", components:[] })
-                                const banEMBED = new MessageEmbed()
-                                .setColor(`#009500`)
-                                .setThumbnail(`https://i.imgur.com/zcZsfNA.png`)
-                                .setTitle(`➔ Art' Portal - Bannissement`)
-                                .addFields(
-                                    { 
-                                        name: "・Utilisateur・",
-                                        value: `**Tag: ${modpanelbanmember.user.tag}\nID: ${modpanelbanmember.id}**`,
-                                        inline: true
-                                    },
-                                    { 
-                                        name: "・Raison du bannissement・",
-                                        value: `**${reason !== null ? `${reason}` : 'No reason specified'}**`,
-                                        inline: true
-                                    },
-                                    {
-                                        name: `・Modérateur・`,
-                                        value: `**${interaction.member.user.tag}**`
-                                    },
-                                    {
-                                        name: `・Date・`,
-                                        value: `<t:${Math.floor(new Date().getTime()/1000)}:D>`,
-                                        inline: true
-                                    },
-                                )
-                                await interaction.followUp({ embeds:[banEMBED] })
-                                m.delete()
-                            });
-                        } catch(error){console.error(error)}
-                    });
-
-                    modpanelbancollector.on('end', async collected => {
-                        if(collected.size==0){
-                            return await interaction.followUp({ content:"Le délai a expiré !", ephemeral: true })
-                        }else if(collected.size==10){
-                            return await interaction.followUp({ content:"La limite de 10 essais a été atteinte !", ephemeral: true })
-                        }
-                    });
-                    */
                     break;
 
                 //rolereact
@@ -763,7 +752,10 @@ module.exports = {
                     if (rolecache.some(role => role.id == '847207140098572318')) {
                         var rolelistmessage = rolelistmessage+"\n<@&847207140098572318>"
                     } else pingcount=pingcount+1
-                    if (pingcount==7) var rolelistmessage=rolelistmessage+"\nAucun"
+                    if (rolecache.some(role => role.id == '955143137226010704')) {
+                        var rolelistmessage = rolelistmessage+"\n<@&955143137226010704>"
+                    } else pingcount=pingcount+1
+                    if (pingcount==8) var rolelistmessage=rolelistmessage+"\nAucun"
 
                     const roleEMBED = new MessageEmbed()
                         .setAuthor(interaction.user.tag)
@@ -802,7 +794,7 @@ module.exports = {
                     interaction.message.reply({ content: interaction.user.tag + " prend en charge la commande!" })
                     break;
                 case 'delete':
-                    if (!interaction.member.roles.cache.has('780553836581879808')) return interaction.reply({ content: "Tu n'a pas la permission de faire ça!", ephemeral: true })
+                    if (!interaction.member.roles.cache.has('778016554066640896')) return interaction.reply({ content: "Tu n'a pas la permission de faire ça!", ephemeral: true })
 
                     var ticketRowDelete = new MessageActionRow()
                         .addComponents(
@@ -838,10 +830,17 @@ module.exports = {
                 const member = await interaction.guild.members.fetch(userid)
                 const user = await client.users.cache.get(userid)
                 await interaction.guild.channels.create(type + "-" + user.username, {
-                    type: 'GUILD_TEXT'
+                    type: 'GUILD_TEXT',
+                	permissionOverwrites: [
+                		{
+                			id: member.id,
+                			allow: [Permissions.FLAGS.VIEW_CHANNEL],
+                		},
+                	],
                 }).then(async channel => {
                     let category = await interaction.guild.channels.cache.find(cat => cat.id === "916721453121040424")
                     await channel.setParent(category.id);
+			        await channel.permissionOverwrites.create(member.id, { VIEW_CHANNEL: true });
                     var btnrowTicket = new MessageActionRow()
                         .addComponents([
                             new MessageButton()
@@ -1216,6 +1215,11 @@ const rolepingsrow = new MessageActionRow()
                     value: 'role_ping_ecology',
                     emoji: '🍄'
                 },
+                {
+                    label: 'Instagram/Instagram',
+                    value: 'role_ping_insta',
+                    emoji: '🖼️'
+                },
             ]),
     );
 const sanctionreason = new MessageActionRow()
@@ -1432,4 +1436,32 @@ const partnershipmodal = new Modal()
     .setMaxLength(1000)
     .setPlaceholder('Décrivez votre serveur / organisation si ce n\'est pas un serveur')
     .setRequired(false),
+);
+
+const suggestionmodal = new Modal()
+.setCustomId('suggestionmodal')
+.setTitle('Art\'Portal - Suggestions')
+.addComponents(
+    new TextInputComponent()
+    .setCustomId('suggestion')
+    .setLabel('Suggestion')
+    .setStyle('LONG')
+    .setMinLength(10)
+    .setMaxLength(1000)
+    .setPlaceholder('Décrivez votre suggestion le plus précisément possible !')
+    .setRequired(true),
+);
+
+const questionmodal = new Modal()
+.setCustomId('questionmodal')
+.setTitle('Art\'Portal - Questions')
+.addComponents(
+    new TextInputComponent()
+    .setCustomId('question')
+    .setLabel('Question')
+    .setStyle('LONG')
+    .setMinLength(10)
+    .setMaxLength(1000)
+    .setPlaceholder('Décrivez votre question le plus précisément possible !')
+    .setRequired(true),
 );
