@@ -1,5 +1,5 @@
 # Aprıl
-Art'Portal (discord partner server)'s bot and mascot.
+[Art'Portal](https://discord.gg/graphisme) (discord partner server)'s bot and mascot.
 
 Proudly developped by @CoolMan#4094
 
