@@ -1,7 +1,7 @@
 # Aprıl
-Art'Portal (discord partner server)'s bot and mascot.
+[Art'Portal](https://discord.gg/graphisme) (discord partner server)'s bot and mascot.
 
-Proudly developped by @CoolMan#4094
+Proudly developed by @CoolMan#4094
 
 In order to use the bot, you will **need** the following npm modules:
   - discord.js
