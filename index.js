@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { Client, Collection, Intents } = require('discord.js');
+const { Client, Collection, Intents, Permissions } = require('discord.js');
 const Discord = require('discord.js');
 const { MessageActionRow, MessageEmbed, MessageSelectMenu, MessageButton } = require('discord.js');
 const { DiscordTogether } = require('discord-together');
@@ -8,12 +8,17 @@ const config = require('./config.json');
 const { mongoConnect } = require('./functions');
 require('dotenv').config();
 
-const client = new Client({ shards: 'auto', partials: ["CHANNEL"], intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_PRESENCES, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_MESSAGE_REACTIONS, Intents.FLAGS.GUILD_MESSAGES] });
+const client = new Client({ shards: "auto", partials: ["CHANNEL"], intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_PRESENCES, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_MESSAGE_REACTIONS, Intents.FLAGS.GUILD_MESSAGES] });
 const discordModals = require('discord-modals');
 const ban = require('./commands/guild/moderation/ban');
 discordModals(client);
 client.config = config;
 client.discordTogether = new DiscordTogether(client);
+
+process.on('uncaughtException', function (err) {
+  console.error(err);
+  console.log("Process prevented from crashing...");
+});
 
 client.commands = new Collection();
 
@@ -58,9 +63,32 @@ client.once('ready', () => {
 	});*/
 });
 
+client.on('error', async (err) => {
+  console.error(err);
+});
 
 client.on('modalSubmit', async (modal) => {
-	if(modal.customId === 'applicationmodal'){
+	if(modal.customId === 'suggestionmodal'){
+		await modal.deferReply({ ephemeral: true });
+		const suggestioncontent = modal.getTextInputValue('suggestion');
+		const message = await modal.channel.send({content: `Suggestion de <@${modal.user.id}>:\n${suggestioncontent}`});
+		const thread = await message.startThread({
+			name: 'Suggestion-'+modal.user.username,
+			autoArchiveDuration: 24*60,
+			reason: "Suggestion faite par "+modal.user.username,
+		});
+		await modal.followUp({content:"Votre suggestion a bien été postée !", ephemeral: true});
+	}else if(modal.customId === 'questionmodal'){
+		await modal.deferReply({ ephemeral: true });
+		const suggestioncontent = modal.getTextInputValue('question');
+		const message = await modal.channel.send({content: `Question de <@${modal.user.id}>:\n${suggestioncontent}`});
+		const thread = await message.startThread({
+			name: 'Question-'+modal.user.username,
+			autoArchiveDuration: 24*60,
+			reason: "Question posée par "+modal.user.username,
+		});
+		await modal.followUp({content:"Votre suggestion a bien été postée !", ephemeral: true});
+	}else if(modal.customId === 'applicationmodal'){
 		await modal.deferReply({ ephemeral: true });
 		const motivation = modal.getTextInputValue('application_motivation');
 		const aptitudes = modal.getTextInputValue('application_aptitudes');
@@ -144,7 +172,7 @@ client.on('modalSubmit', async (modal) => {
 					inline: false
 				},
 				{
-					name: `・Disponibilité・`,
+					name: `・Exemples de créations・`,
 					value: `${disponibilites}`,
 					inline: false
 				},
@@ -195,12 +223,18 @@ client.on('modalSubmit', async (modal) => {
 		
 
         await modal.guild.channels.create("ticket-" + modal.user.username, {
-            type: 'GUILD_TEXT'
+            type: 'GUILD_TEXT',
+            permissionOverwrites: [
+	    		{
+                	id: modal.user.id,
+               		allow: [Permissions.FLAGS.VIEW_CHANNEL],
+           		},
+           	],
         }).then(async channel => {
             let category = modal.guild.channels.cache.find(cat => cat.id === "780559502105378836");
 
             await channel.setParent(category.id);
-
+			await channel.permissionOverwrites.create(modal.user.id, { VIEW_CHANNEL: true });
             var btnrowTicket = new MessageActionRow()
                 .addComponents([
                     new MessageButton()
@@ -259,11 +293,18 @@ client.on('modalSubmit', async (modal) => {
 	} else if (modal.customId=='partnershipmodal'){
 		await modal.deferReply({ ephemeral: true });
 		await modal.guild.channels.create("ticket-" + modal.user.username, {
-			type: 'GUILD_TEXT'
+			type: 'GUILD_TEXT',
+            permissionOverwrites: [
+                {
+                	id: modal.user.id,
+                	allow: [Permissions.FLAGS.VIEW_CHANNEL],
+                },
+            ],
 		}).then(async channel => {
 			let category = modal.guild.channels.cache.find(cat => cat.id === "847188286043717632")
 
 			await channel.setParent(category.id);
+			await channel.permissionOverwrites.create(modal.user.id, { VIEW_CHANNEL: true });
 
 			var btnrowTicket = new MessageActionRow()
 				.addComponents([
@@ -345,7 +386,7 @@ client.on('modalSubmit', async (modal) => {
         const userRoleRawPos = user.roles.highest.rawPosition;
         const memberRoleRawPos = modal.member.roles.highest.rawPosition;
 
-        if(!modal.member.permissions.has("TIMEOUT_MEMBERS")) return modal.followUp({content: `Vous n'avez pas la permisssion \`BAN_MEMBERS\` pour effectuer cette commande.`, ephemeral: true});
+        if(!modal.member.permissions.has("MODERATE_MEMBERS")) return modal.followUp({content: `Vous n'avez pas la permisssion \`MODERATE_MEMBERS\` pour effectuer cette commande.`, ephemeral: true});
 
         if(user.user.id === modal.user.id) return modal.followUp({content: `Vous ne pouvez pas vous mute vous-même! !`, ephemeral: true});
 
@@ -394,5 +435,27 @@ client.on('modalSubmit', async (modal) => {
 		await channel.send({ embeds: [timeoutEMBED] })
 	}
 });
+
+
+client.on('guildMemberAdd', async guildMember => {
+	//console.log("1")
+	//console.log(member.guild.id)
+	//console.log(guild.id)
+	const guild = guildMember.guild
+    if (guild.id=="766324873546563615"){
+		const channel = await guild.channels.cache.find(c => c.id=='810585812394967091');
+		try{
+			channel.send({ content: welcomemessage.replace("[memberid]", guildMember.id)});
+		}catch(error){
+			console.log(error)
+		};
+	}
+});//OwO ?
+
+const welcomemessage = 
+"☆ Bienvenue <@[memberid]> ☆\n"+
+"\n"+
+"Je t'invite à aller lire le <#766336361984294913> ainsi que de prendre tes rôles dans <#947860675017973841>\n"+
+"Nous espérons que tu passera un bon moment sur Art' Portal ! ^^"
 
 client.login(token);
