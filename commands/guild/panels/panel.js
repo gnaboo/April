@@ -45,48 +45,48 @@ module.exports = {
 
         switch(interaction.options.getSubcommand()) {
             case 'rolereact':
-                await interaction.reply({content: "Le panel de rolereact est en cours de création...", ephemeral: true})
+                await interaction.reply({content: "Le panel de rolereact est en cours de création...", ephemeral: true});
                 const rolereactchannel = interaction.options.getChannel('panelchannel');
                 const rolereactEMBED = new MessageEmbed()
                         .setAuthor("Art'Portal")
                         .setTitle("Choisissez vos rôles/Choose your roles")
                         .setDescription("Cliquez sur les boutons pour choisir les rôles correspondant à vos choix\nClick on the buttons in order to choose the roles you want")
-                        .setColor(`#7961fd`)
+                        .setColor(`#7961fd`);
                     const genrebtn = new MessageButton()
                         .setCustomId("getrole_genre")
                         .setLabel("Genre/Genre")
                         .setStyle('PRIMARY')
-                        .setEmoji("👥")
+                        .setEmoji("👥");
                     const hobbiesbtn = new MessageButton()
                         .setCustomId("getrole_hobbies")
                         .setLabel("Hobbies/Hobbies")
                         .setStyle('PRIMARY')
-                        .setEmoji("♟️")
+                        .setEmoji("♟️");
                     const colorbtn = new MessageButton()
                         .setCustomId("getrole_color")
                         .setLabel("Couleur/Color")
                         .setStyle('PRIMARY')
-                        .setEmoji("🌈")
+                        .setEmoji("🌈");
                     const pingsbtn = new MessageButton()
                         .setCustomId("getrole_pings")
                         .setLabel("Notifications/Pings")
                         .setStyle('PRIMARY')
-                        .setEmoji("📌")
+                        .setEmoji("📌");
                     
                     const listbtn = new MessageButton()
                     .setCustomId("getrole_list")
                     .setLabel("Afficher vos rôles")
                     .setStyle('SECONDARY')
-                    .setEmoji("📖")
+                    .setEmoji("📖");
                     const btnrow = new MessageActionRow()
                         .addComponents([genrebtn, hobbiesbtn, colorbtn, pingsbtn]);
                     const btnrow2 = new MessageActionRow()
                         .addComponents([listbtn]);
-                    rolereactchannel.send({ embeds: [rolereactEMBED], components: [btnrow, btnrow2] })
-                    await interaction.editReply({content: "Le panel de rolereact a bien été envoyé !", ephemeral: true})
+                    rolereactchannel.send({ embeds: [rolereactEMBED], components: [btnrow, btnrow2] });
+                    await interaction.editReply({content: "Le panel de rolereact a bien été envoyé !", ephemeral: true});
                 break;
             case 'rolereactembed':
-                const rolereactpresentationchannel = interaction.options.getChannel('panelchannel')
+                const rolereactpresentationchannel = interaction.options.getChannel('panelchannel');
                 const rolereactpresentationEMBED = new MessageEmbed()
                         .setAuthor("Art'Portal")
                         .setTitle("Présentation des rôles")
@@ -106,7 +106,7 @@ module.exports = {
                             },
                             { 
                                 name: "・Notifications・",
-                                value: `<@&768396461763067914>\n<@&784646468958945280>\n<@&774693756901392404>\n<@&770568527156346880>\n<@&770723703948181525>\n<@&799249307362131978>\n<@&847207140098572318>`,
+                                value: `<@&768396461763067914>\n<@&784646468958945280>\n<@&774693756901392404>\n<@&770568527156346880>\n<@&770723703948181525>\n<@&799249307362131978>\n<@&847207140098572318>\n<@&955143137226010704>`,
                                 inline: true
                             },
                             { 
@@ -114,74 +114,62 @@ module.exports = {
                                 value: `<@&949745563824431124>\n<@&949746089987289128>\n<@&949746175920181278>\n<@&949746259898544229>\n<@&949746341754601502>\n<@&949746559019540511>\n<@&949746641764749324>\n<@&949746678519439370>`,
                                 inline: true
                             },
-                        )
-                await rolereactpresentationchannel.send({embeds:[rolereactpresentationEMBED]})
-                await interaction.reply({ content: "L'embed a bien été envoyé !", ephemeral: true })
+                        );
+                await rolereactpresentationchannel.send({embeds:[rolereactpresentationEMBED]});
+                await interaction.reply({ content: "L'embed a bien été envoyé !", ephemeral: true });
 
                 break;
             case 'moderation':
-                await interaction.reply({content: "Le panel de rolereact est en cours de création...", ephemeral: true})
-                const moderationchannel = interaction.options.getChannel('panelchannel');
-                const moderationEMBED = new MessageEmbed()
+                await interaction.reply({content: "Le panel de rolereact est en cours de création...", ephemeral: true});
+                const suggestchannel = interaction.options.getChannel('panelchannel');
+                const suggestEMBED = new MessageEmbed()
                         .setAuthor("Art'Portal")
-                        .setTitle("Panel de modération/Moderation panel")
-                        .setDescription("Cliquez sur les boutons pour appliquer les sanctions")
-                        .setColor(`#7961fd`)
-                    const banbtn = new MessageButton()
-                        .setCustomId("modpanel_ban")
-                        .setLabel("Bannir")
-                        .setStyle('DANGER')
-                        .setEmoji("🔨")
-                    const kickbtn = new MessageButton()
-                        .setCustomId("modpanel_kick")
-                        .setLabel("Expulser")
-                        .setStyle('DANGER')
-                        .setEmoji("🦶")
-                    const mutebtn = new MessageButton()
-                        .setCustomId("modpanel_mute")
-                        .setLabel("Mute")
-                        .setStyle('PRIMARY')
-                        .setEmoji("🔇")
-                    /*const warnbtn = new MessageButton()
-                        .setCustomId("modpanel_warn")
-                        .setLabel("Notifications/Pings")
-                        .setStyle('PRIMARY')
-                        .setEmoji("📌")*/
+                        .setTitle("Panel de suggestions/question")
+                        .setDescription("Proposez vos suggestions ou posez une question ! Le staff vous répondra sous peu !")
+                        .setColor(`#7961fd`);
+                    const suggestbtn = new MessageButton()
+                        .setCustomId("suggestion")
+                        .setStyle('SUCCESS')
+                        .setEmoji("📩");
+                    const questionbtn = new MessageButton()
+                        .setCustomId("question")
+                        .setStyle('SUCCESS')
+                        .setEmoji("❓");
                     
                     /*const sanctionsbtn = new MessageButton()
                     .setCustomId("modpanel_sannctionslist")
                     .setLabel("Afficher vos rôles")
                     .setStyle('SECONDARY')
                     .setEmoji("📖")*/
-                    const modbtnrow = new MessageActionRow()
-                        .addComponents([banbtn, kickbtn, mutebtn]);
+                    const suggestbtnrow = new MessageActionRow()
+                        .addComponents([suggestbtn, questionbtn]);
                     //const modbtnrow2 = new MessageActionRow()
                     //    .addComponents([listbtn]);
-                    moderationchannel.send({ embeds: [moderationEMBED], components: [modbtnrow/*, modbtnrow2*/] })
-                    await interaction.editReply({content: "Le panel de modération a bien été envoyé !", ephemeral: true})
+                    suggestchannel.send({ embeds: [suggestEMBED], components: [suggestbtnrow/*, modbtnrow2*/] });
+                    await interaction.editReply({content: "Le panel de suggestions/questions a bien été envoyé !", ephemeral: true});
                 break;
             case 'candidatures':
-                await interaction.reply({content: "Le panel de rolereact est en cours de création...", ephemeral: true})
+                await interaction.reply({content: "Le panel de rolereact est en cours de création...", ephemeral: true});
                 const applicationchannel = interaction.options.getChannel('panelchannel');
                 const applicationEMBED = new MessageEmbed()
                         .setAuthor("Art'Portal")
                         .setTitle("Candidatures")
                         .setDescription("Cliquez sur le bouton pour candidater pour entrer dans le staff / l'équipe d' artistes.")
-                        .setColor(`#7961fd`)
+                        .setColor(`#7961fd`);
                     const applicationbtn = new MessageButton()
                         .setCustomId("apply")
                         .setLabel("Candidature staff")
                         .setStyle('SUCCESS')
-                        .setEmoji("🛠")
+                        .setEmoji("🛠");
                     const applicationbtnartist = new MessageButton()
                         .setCustomId("applyartist")
                         .setLabel("Candidature artiste")
                         .setStyle('SUCCESS')
-                        .setEmoji("🖌️")
+                        .setEmoji("🖌️");
                     const applicationbtnrow = new MessageActionRow()
                         .addComponents([applicationbtn, applicationbtnartist]);
-                    applicationchannel.send({ embeds: [applicationEMBED], components: [applicationbtnrow] })
-                    await interaction.editReply({content: "Le panel de candidature a bien été envoyé !", ephemeral: true})
+                    applicationchannel.send({ embeds: [applicationEMBED], components: [applicationbtnrow] });
+                    await interaction.editReply({content: "Le panel de candidature a bien été envoyé !", ephemeral: true});
                 break;
         }
 	},
