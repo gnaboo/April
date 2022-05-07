@@ -1,4 +1,4 @@
-# Aprıl
+# Aprıl - Please update this branch and leave main for releases
 [Art'Portal](https://discord.gg/graphisme) (discord partner server)'s bot and mascot.
 
 Proudly developed by @CoolMan#4094
