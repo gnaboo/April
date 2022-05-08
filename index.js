@@ -10,7 +10,6 @@ require('dotenv').config();
 
 const client = new Client({ shards: "auto", partials: ["CHANNEL"], intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_PRESENCES, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_MESSAGE_REACTIONS, Intents.FLAGS.GUILD_MESSAGES] });
 const discordModals = require('discord-modals');
-const ban = require('./commands/guild/moderation/ban');
 discordModals(client);
 client.config = config;
 client.discordTogether = new DiscordTogether(client);
