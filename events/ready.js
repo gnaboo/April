@@ -37,7 +37,9 @@ module.exports = {
             "Portal'Bot v3 - Art'Portal v3 *un jour*"
             ];
             setInterval(() => {
-                let nombreutilisateurs = client.users.cache.size
+                //let nombreutilisateurs = client.users.cache.size
+		// unused variable ?
+		   
                 let Random = Math.floor(Math.random() * (status_list.length));
                 client.user.setActivity(status_list[Random], { type: "PLAYING" });
             }, 10000);
